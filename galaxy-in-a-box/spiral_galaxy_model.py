@@ -126,9 +126,10 @@ mass, X, Y = spatial_mass_dist(N=1e4, mmin=1e4, mmax=1e6)
 
 import Galaxy_clusters as cd
 import Galaxycluster_emission as ce
+
 Mcm=mass
 tff=[1.0]
-IMF=[0]
+IMF=[0.0]
 SFE=[0.03]
 for n in tff:
 	for j in IMF:
@@ -137,10 +138,11 @@ for n in tff:
 				f = open("cluster_setup.dat")
 				fout = open("cluster_setup_change.dat", "wt")
 				for line in f:
-					fout.write(line.replace('10000', str(i)))
-					fout.write(line.replace('0.03', str(s)))
-					fout.write(line.replace('0.0',str(j)))
-					fout.write(line.replace('1.0',str(n)))
+				    line=line.replace('10000', str(i))
+				    line=line.replace('0.03', str(s))
+				    line=line.replace('0.0',str(j))
+				    fout.write(line.replace('1.0',str(n)))
+
 				f.close()
 				fout.close()
 				newname="distributions_Mcm="+str(i)+"_tff="+str(n)+"_imf="+str(j)+"_SFE="+str(s)+".dat"
