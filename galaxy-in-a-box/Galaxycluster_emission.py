@@ -21,7 +21,7 @@ import os
 # Constants in CGS units -- will add unit conversion later
 #
 class CgsConst:
-    
+
     def __init__(self):
         self.c = 2.99792458e10    # cm s**-1
         self.k = 1.3806504e-16    # erg K**-1
@@ -40,7 +40,7 @@ const=CgsConst()
 # Observational fits
 #
 class ObsFit:
-	
+
 	def __init__(self):
 		pass
 
@@ -91,7 +91,7 @@ ofit = ObsFit()
 # Basic 1D template model to prove concept (to implement: spectral cubes)
 #
 class Mod_Template:
-    
+
 	############################################################################
 	# Random mass plus radial distributions
 	############################################################################
@@ -101,17 +101,17 @@ class Mod_Template:
         f=open('image_setup_change.dat','r')
         for line in f.readlines():
             config[line.split()[0]]=line.split()[1]
-    
+
         # Parameters relating to new image
         dist = float(config['bob']) # distance to cluster in pc
         pixel_size = float(config['psize']) # pixel size in arcsec
         resolution = float(config['beam']) # resolution of new image
         dim_pix = int(config['dim']) # image size in pixels
-    
+
         tol = float(config['tol'])   # fit tolerance: if probability greater, then hypothesis is rejected at 1 sigma
 
-        classI_scale = 0.1	
-    
+        classI_scale = 0.1
+
         ### Parameters relating to template observations
         # NOTE: JCMT observations still on T_A^* scale and intensity integration does not include dv (0.43 km/s)
         # the factor "fudge" takes care of that below
@@ -119,44 +119,33 @@ class Mod_Template:
         fudge = 0.43
         jy_k = 15.625   # K to Jy conversion specific to the JCMT (http://docs.jach.hawaii.edu/JCMT/HET/GUIDE/het_guide/); applies to T_A^*
         eta_a = 0.53    # again, specific to the JCMT
-    
+
         dist0 = 200.   # Reference distance (normalization)
         obs = np.genfromtxt(config['obs'])
         model = np.genfromtxt(config['dist'], skip_header=1)
-    
+
         menv = obs[:,3]
         # lbol = obs[:,5]   # not worried about Lbol for the moment, can come later
-    
+
         area_beam = obs[:,5] * obs[:,4]**2 / (np.pi * (beam_width/2.)**2)
         # i_dist = obs[:,8]*(obs[:,2]/dist0)**2 * fudge * jy_k/eta_a / area_beam
         i_dist = obs[:,8]*(obs[:,2]/dist)**2 * fudge * jy_k/eta_a / area_beam
-    
+
         fit, flag = ofit.correlation_test(menv, i_dist, tol)
-    
+
         # r0 = np.mean((((obs[:,2]*obs[:,4])**2*obs[:,5])/np.pi)**0.5)/dist # average radius of emitting region in arcsec
         r0 = np.mean((((obs[:,5]*(obs[:,4])**2)**0.5/np.pi)**2 - (beam_width/2.)**2)**0.5*obs[:,2])/dist
         sep = np.mean(obs[:,2]*obs[:,7])/dist # average separation between outflow lobe and protostar in arcsec
         npix = (r0 / pixel_size)**2  # number of pixels per lobe
         npix_beam = 2.*np.pi*(resolution/2./(2.*np.log(2.))**0.5)**2 / pixel_size**2   # number of pixels per beam
-    
-        # im = np.zeros([dim_pix, dim_pix])
-        im=[]
+
         # Isolate Class 0 and I sources from the model
-        # cl0 = np.asarray(((model[:,6] == 10)).nonzero())[0]
-        cl0 = np.asarray(((model[:,6] == 10) | (model[:,6] == 2)).nonzero())[0]
-        cl1 = np.asarray((model[:,6] == 11).nonzero())[0]
- 
-        for i in cl0:
+        cl0 = ((model[:,6] == 10) | (model[:,6] == 2))
+        cl1 = (model[:,6] == 11)
+        cl0int=fit[0] + fit[1]*model[:,2][cl0]
+        cl1int=classI_scale * (fit[0] + fit[1]*model[:,2][cl1])
 
-            cl0int=fit[0] + fit[1]*model[i,2]
-            im.append(cl0int)
-        
-        for i in cl1:
-
-            cl1int=classI_scale * (fit[0] + fit[1]*model[i,2])
-            im.append(cl1int)
-        
-        im=[np.sum(im)]
+        im = [sum(cl0int)+sum(cl1int)]
         mass=[sum(model[:,2])/0.03]
         N=[len(model[:,2])]
 
@@ -190,5 +179,3 @@ class Mod_Template:
 if __name__ == "__main__":
     template=Mod_Template()
     template.main()
-
-
