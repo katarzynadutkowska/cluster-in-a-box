@@ -292,13 +292,9 @@ class Mod_MassRad:
 
         #print ('Spatial distribution calculated')
 
-        f=open('distribution.dat','w')
+        space_dist=x,y,self.m,self.i,self.pa,self.vel,self.mass_flag
+        np.save('distribution.npy',space_dist)
 
-        f.write('x(pc)     y(pc)      M(Msun)    i(deg)     PA(deg)    vel(km/s)  Mass flag\n')
-
-        for i in range(0,N): f.write('%10.4f %10.4f %10.4f %10.4f %10.4f %10.4f %10i\n' %(self.x[i],self.y[i],self.m[i],self.i[i],self.pa[i],self.vel[i],self.mass_flag[i]))
-
-        f.close()
 
 
 
@@ -367,6 +363,7 @@ class Mod_distribution:
 
             mass = self.massrad.m
             N = self.massrad.N
+
             print("Number of stars in cluster is "+str(N))
             # temp = numpy.zeros(N)
             # temp2 = numpy.zeros(20)

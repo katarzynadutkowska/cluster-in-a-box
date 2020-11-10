@@ -122,7 +122,7 @@ class Mod_Template:
 
         dist0 = 200.   # Reference distance (normalization)
         obs = np.genfromtxt(config['obs'])
-        model = np.genfromtxt(config['dist'], skip_header=1)
+        model = np.load(config['dist'])
 
         menv = obs[:,3]
         # lbol = obs[:,5]   # not worried about Lbol for the moment, can come later
@@ -140,17 +140,17 @@ class Mod_Template:
         npix_beam = 2.*np.pi*(resolution/2./(2.*np.log(2.))**0.5)**2 / pixel_size**2   # number of pixels per beam
 
         # Isolate Class 0 and I sources from the model
-        cl0 = ((model[:,6] == 10) | (model[:,6] == 2))
-        cl1 = (model[:,6] == 11)
-        cl0int=fit[0] + fit[1]*model[:,2][cl0]
-        cl1int=classI_scale * (fit[0] + fit[1]*model[:,2][cl1])
+        cl0 = ((model[6] == 10) | (model[6] == 2))
+        cl1 = (model[6] == 11)
+        cl0int=fit[0] + fit[1]*model[2][cl0]
+        cl1int=classI_scale * (fit[0] + fit[1]*model[2][cl1])
 
         im = [sum(cl0int)+sum(cl1int)]
-        mass=[sum(model[:,2])/0.03]
-        N=[len(model[:,2])]
+        mass=[sum(model[2])/0.03]
+        N=[len(model[2])]
 
-        print('Total emission from cluster is '+str(im))
-        print('Total mass in cluster is '+str(mass))
+        #print('Total emission from cluster is '+str(im))
+        #print('Total mass in cluster is '+str(mass))
 
         config={}
         for line in open("cluster_setup_change.dat","r").readlines():

@@ -6,7 +6,7 @@ import math
 import os
 from os import listdir
 from os.path import isfile, join
-import sys	
+import sys
 from sympy.solvers import nsolve
 from sympy import Symbol, exp
 from astropy.utils.data import get_pkg_data_filename
@@ -123,9 +123,9 @@ def spatial_mass_dist(
 
 mass, X, Y = spatial_mass_dist(N=1e4, mmin=1e4, mmax=1e6)
 
-
 import Galaxy_clusters as cd
 import Galaxycluster_emission as ce
+
 Mcm=mass
 tff=[1.0]
 IMF=[0]
@@ -136,7 +136,7 @@ for n in tff:
 			for i in Mcm:
 				f = open("cluster_setup.dat")
 				fout = open("cluster_setup_change.dat", "wt")
-				for line in f: 
+				for line in f:
 					fout.write(line.replace('10000', str(i)))
 					for line in f:
 						fout.write(line.replace('0.03', str(s)))
@@ -146,19 +146,19 @@ for n in tff:
 								fout.write(line.replace('1.0',str(n)))
 				f.close()
 				fout.close()
-				newname="distributions_Mcm="+str(i)+"_tff="+str(n)+"_imf="+str(j)+"_SFE="+str(s)+".dat"
+				newname="distributions_Mcm="+str(i)+"_tff="+str(n)+"_imf="+str(j)+"_SFE="+str(s)+".npy"
 				distribution=cd.Mod_distribution()
 				distribution.calc()
-				os.rename("distribution.dat",newname)
+				os.rename("distribution.npy",newname)
 				g=open("image_setup.dat")
 				gout = open("image_setup_change.dat", "wt")
-				for line in g: 
-					gout.write(line.replace('distribution.dat', newname))
+				for line in g:
+					gout.write(line.replace('distribution.npy', newname))
 				g.close()
 				gout.close()
 				template=ce.Mod_Template()
 				template.main()
-				try: 
+				try:
 					os.remove(newname)
 				except OSError:
 					pass
@@ -208,17 +208,17 @@ for i in range(0,len(X)):
         d = comb1[i][0]
         data=np.zeros((3,3))
         data[1,1]=d
-    
+
     x=X[i]*56
     y=Y[i]*56
-    
+
     Galaxyarray[int((x+(dims[0]-len(data))/2)):int((x+(dims[0]+len(data))/2)),int((y+(dims[1]-len(data))/2)):int((y+(dims[1]+len(data))/2))]+=data
 #print(np.amax(x))
 config={}
 f=open('image_setup_change.dat','r')
 for line in f.readlines():
     config[line.split()[0]]=line.split()[1]
-    
+
 # Parameters relating to new image
 dist = float(config['bob']) # distance to cluster in pc
 pixel_size = float(config['psize']) # pixel size in arcsec
