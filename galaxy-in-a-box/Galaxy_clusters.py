@@ -79,7 +79,7 @@ class Mod_MyFunctions:
 
         lmbda=numpy.zeros(5)
 
-        ### Relative population fractions observed in clouds where t = 1.2 Myr 
+        ### Relative population fractions observed in clouds where t = 1.2 Myr
 
         lmbda[0]=14.7
         lmbda[1]=7.9
@@ -128,7 +128,7 @@ class Mod_MyPlot:
 		small = 12
 		tiny = 8
 		line = 1.5
-	
+
 		params={'axes.labelsize': normal,
 		    'axes.linewidth': line,
 			'lines.markeredgewidth': line,
@@ -178,7 +178,7 @@ class Mod_MyPlot:
 # Constants in CGS units
 #
 class CgsConst:
-    
+
     def __init__(self):
         self.c = 2.99792458e10    # cm s**-1
         self.k = 1.3806504e-16    # erg K**-1
@@ -227,7 +227,7 @@ class Mod_MassRad:
 
         f.write('Total cluster mass: %6.2f \n' %(sum(self.m)))
 
-        # Spatial distribution  
+        # Spatial distribution
         r = r0 * (N/N0)**alpha
         rad = r*numpy.random.power(2.-p, size=(N))
         rad_m = rad*(self.m/min(self.m))**(-0.15)
@@ -243,7 +243,7 @@ class Mod_MassRad:
         age_temp= myf.age_dist(m_temp, r, tffscale = tffscale)
 
         #print ('Age fractions calculated')
-        f.write('Age distribution (Class 0, I, Flat, II, III): %4.2f, %4.2f, %4.2f, %4.2f, %4.2f \n' %(age_temp[0], age_temp[1], age_temp[2], age_temp[3], age_temp[4])) 
+        f.write('Age distribution (Class 0, I, Flat, II, III): %4.2f, %4.2f, %4.2f, %4.2f, %4.2f \n' %(age_temp[0], age_temp[1], age_temp[2], age_temp[3], age_temp[4]))
 
 
         # 3. Sort out BD, LM and HM stars; for this project, ignore BD and HM
@@ -282,9 +282,8 @@ class Mod_MassRad:
 
         f.close()
 
-        for i in range(0,N): 
-            self.x[i] = rad_m[i]*cos(phi[i])
-            self.y[i] = rad_m[i]*sin(phi[i])
+        x = rad_m[:]*np.cos(phi[:])
+        y= rad_m[:]*np.sin(phi[:])
 
         # Outflow inclination, PA and protostellar velocity dispersion
         self.i = numpy.random.rand(N)*90.
@@ -294,11 +293,11 @@ class Mod_MassRad:
         #print ('Spatial distribution calculated')
 
         f=open('distribution.dat','w')
-        
+
         f.write('x(pc)     y(pc)      M(Msun)    i(deg)     PA(deg)    vel(km/s)  Mass flag\n')
-        
+
         for i in range(0,N): f.write('%10.4f %10.4f %10.4f %10.4f %10.4f %10.4f %10i\n' %(self.x[i],self.y[i],self.m[i],self.i[i],self.pa[i],self.vel[i],self.mass_flag[i]))
-        
+
         f.close()
 
 
@@ -348,23 +347,23 @@ class Mod_distribution:
         self.massrad=Mod_MassRad()
         self.myplot=Mod_MyPlot()
 
-    
+
     ############################################################################
     # begin calculation
     ############################################################################
     def calc(self):
 
             self.massrad.mass_radius(
-            Mcm = self.Mcm, 
-            N0 = self.N0, 
-            r0 = self.r0, 
-            alpha = self.alpha, 
+            Mcm = self.Mcm,
+            N0 = self.N0,
+            r0 = self.r0,
+            alpha = self.alpha,
             p = self.p,
             dv = self.dv,
             tffscale = self.tffscale,
             SFE = self.SFE,
             imf_type = self.imf_type)
-            
+
 
             mass = self.massrad.m
             N = self.massrad.N
@@ -382,8 +381,3 @@ class Mod_distribution:
 if __name__ == "__main__":
     distribution=Mod_distribution()
     distribution.calc()
-
-
-
-
-
