@@ -364,7 +364,7 @@ class Mod_distribution:
             mass = self.massrad.m
             N = self.massrad.N
 
-            print("Number of stars in cluster is "+str(N))
+            #print("Number of stars in cluster is "+str(N))
             # temp = numpy.zeros(N)
             # temp2 = numpy.zeros(20)
             # for i in range(0,N): temp[i] = log10(mass[i])

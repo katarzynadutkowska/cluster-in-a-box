@@ -123,9 +123,13 @@ def spatial_mass_dist(
 
 mass, X, Y = spatial_mass_dist(N=1e4, mmin=1e4, mmax=1e6)
 
+
+filename = 'galaxycluster_emission.csv'
 import Galaxy_clusters as cd
 import Galaxycluster_emission as ce
-os.remove('galaxycluster_emission.csv')
+
+if os.path.exists(filename):
+	os.remove(filename)
 
 Mcm=np.array(mass)
 tff=[1.0]

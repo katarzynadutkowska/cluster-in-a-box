@@ -121,7 +121,7 @@ class Mod_Template:
         eta_a = 0.53    # again, specific to the JCMT
 
         dist0 = 200.   # Reference distance (normalization)
-        obs = np.genfromtxt(config['obs'])
+        obs = np.genfromtxt(config['obs'],skip_header=1)
         model = np.load(config['dist'])
 
         menv = obs[:,3]
