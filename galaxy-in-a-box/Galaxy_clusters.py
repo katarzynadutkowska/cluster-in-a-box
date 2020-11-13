@@ -60,7 +60,7 @@ class Mod_MyFunctions:
         mmin_log = np.log10(mmin)
         mmax_log = np.log10(mmax)
 
-        chunksize = 1000
+        chunksize = int(Mcm * 0.3)
         result = np.array([], dtype=np.float64)
         while result.sum() <= SFE * Mcm:
             x = np.random.uniform(mmin_log, mmax_log, size=chunksize)
@@ -213,19 +213,14 @@ class Mod_MassRad:
         dv=2.0,
         tffscale=1.0,
         SFE=0.03,
-        imf_type=0):
-
-        f=open('output_distribution','w')
+        imf_type=0,
+        output=1):
 
         m_temp = myf.mass_dist(mmin = 0.01, mmax = 100., Mcm = Mcm, imf_type = imf_type, SFE=SFE)
         N=len(m_temp)
 
-        f.write('min(M), max(M) = %4.2f, %4.2f Msun\n' %(min(m_temp), max(m_temp)))
-
         self.m = m_temp
         self.N = N
-
-        f.write('Total cluster mass: %6.2f \n' %(sum(self.m)))
 
         # Spatial distribution
         r = r0 * (N/N0)**alpha
@@ -236,33 +231,19 @@ class Mod_MassRad:
         self.x = numpy.zeros(N)
         self.y = numpy.zeros(N)
 
-        f.write('Rmax = %4.2f pc \n' %r)
-
         # 2. Calculate age distribution
 
         age_temp= myf.age_dist(m_temp, r, tffscale = tffscale)
 
         #print ('Age fractions calculated')
-        f.write('Age distribution (Class 0, I, Flat, II, III): %4.2f, %4.2f, %4.2f, %4.2f, %4.2f \n' %(age_temp[0], age_temp[1], age_temp[2], age_temp[3], age_temp[4]))
-
 
         # 3. Sort out BD, LM and HM stars; for this project, ignore BD and HM
         hm = numpy.asarray((m_temp > 10.).nonzero())[0]
         lm = numpy.asarray(((m_temp <= 10.) & (m_temp > 0.05)).nonzero())[0]
         bd = numpy.asarray((m_temp <= 0.05).nonzero())[0]
 
-        f.write(' \n')
-        f.write('Number of HM cores: %3i \n' %(numpy.size(hm)))
-        f.write('Number of LM cores: %3i \n' %(numpy.size(lm)))
-        f.write('Number of BD cores: %3i \n' %(numpy.size(bd)))
-
-
         nC0 = int(numpy.round(numpy.size(lm)*age_temp[0]))
         nCI = int(numpy.round(numpy.size(lm)*age_temp[1]))
-
-        f.write(' \n')
-        f.write('Number of LM Class 0 sources: %3i \n' %(nC0))
-        f.write('Number of LM Class I sources: %3i \n' %(nCI))
 
         lm0 = lm[:nC0]
         lmi = lm[nC0:nC0+nCI]
@@ -280,7 +261,21 @@ class Mod_MassRad:
         self.mass_flag[lmii] = 12
         self.mass_flag[bd] = 0
 
-        f.close()
+        #if not os.path.exists('output_distribution'):
+        if output == 1:
+            f=open('output_distribution','w')
+            f.write('min(M), max(M) = %4.2f, %4.2f Msun\n' %(min(m_temp), max(m_temp)))
+            f.write('Total cluster mass: %6.2f \n' %(sum(self.m)))
+            f.write('Rmax = %4.2f pc \n' %r)
+            f.write('Age distribution (Class 0, I, Flat, II, III): %4.2f, %4.2f, %4.2f, %4.2f, %4.2f \n' %(age_temp[0], age_temp[1], age_temp[2], age_temp[3], age_temp[4]))
+            f.write(' \n')
+            f.write('Number of HM cores: %3i \n' %(numpy.size(hm)))
+            f.write('Number of LM cores: %3i \n' %(numpy.size(lm)))
+            f.write('Number of BD cores: %3i \n' %(numpy.size(bd)))
+            f.write(' \n')
+            f.write('Number of LM Class 0 sources: %3i \n' %(nC0))
+            f.write('Number of LM Class I sources: %3i \n' %(nCI))
+            f.close()
 
         x = rad_m[:]*np.cos(phi[:])
         y= rad_m[:]*np.sin(phi[:])
@@ -347,7 +342,7 @@ class Mod_distribution:
     ############################################################################
     # begin calculation
     ############################################################################
-    def calc(self):
+    def calc(self, output = 1):
 
             self.massrad.mass_radius(
             Mcm = self.Mcm,
@@ -358,7 +353,8 @@ class Mod_distribution:
             dv = self.dv,
             tffscale = self.tffscale,
             SFE = self.SFE,
-            imf_type = self.imf_type)
+            imf_type = self.imf_type,
+            output= output)
 
 
             mass = self.massrad.m

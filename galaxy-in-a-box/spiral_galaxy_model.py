@@ -27,9 +27,8 @@ def spatial_mass_dist(
 	y=-1.64 #Mass spectra slope from Mark Krumholz 2019 original -1.64
 	MassDist=[]
 	massrange=np.arange(mmin,mmax,1)
-	for m in massrange:
-		MassDis=(m)**(y)
-		MassDist.append(MassDis)
+	MassDist=massrange**(y)
+
 	MassDistribution=(MassDist/max(MassDist))*mmax
 	mass=[]
 	while len(mass) < (N):
@@ -54,11 +53,8 @@ def spatial_mass_dist(
 	maxrad=12 #maximum radius of galaxy in kpc
 
 	###Creating exponential distribution###
-	rexp=[]
 	R=np.arange(0,10,0.0001)
-	for i in R:
-		lob=beta*np.exp(-(i*beta))
-		rexp=np.append(rexp,lob)
+	rexp=beta*np.exp(-(R*beta))
 	m=np.random.choice(rexp,int(Nd/(2))) #radially follows an exponential distribution randomly chosen
 	### Generating spiral arm shape given parameters ###
 	no=m*2.8*math.pi/(max(m)) #values of phi with designated highest phi value
@@ -123,7 +119,6 @@ def spatial_mass_dist(
 
 mass, X, Y = spatial_mass_dist(N=1e4, mmin=1e4, mmax=1e6)
 
-
 filename = 'galaxycluster_emission.csv'
 import Galaxy_clusters as cd
 import Galaxycluster_emission as ce
@@ -135,6 +130,7 @@ Mcm=np.array(mass)
 tff=[1.0]
 IMF=[0]
 SFE=[0.03]
+
 for n in tff:
 	for j in IMF:
 		for s in SFE:
@@ -153,7 +149,7 @@ for n in tff:
 				fout.close()
 				newname="distributions_Mcm="+str(i)+"_tff="+str(n)+"_imf="+str(j)+"_SFE="+str(s)+".npy"
 				distribution=cd.Mod_distribution()
-				distribution.calc()
+				distribution.calc(output=0)
 				os.rename("distribution.npy",newname)
 				g=open("image_setup.dat")
 				gout = open("image_setup_change.dat", "wt")
