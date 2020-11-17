@@ -158,7 +158,7 @@ for n in tff:
 				g.close()
 				gout.close()
 				template=ce.Mod_Template()
-				template.main()
+				template.main(output=0)
 				try:
 					os.remove(newname)
 				except OSError:

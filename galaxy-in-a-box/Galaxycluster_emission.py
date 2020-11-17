@@ -95,7 +95,7 @@ class Mod_Template:
 	############################################################################
 	# Random mass plus radial distributions
 	############################################################################
-    def main(self):
+    def main(self,output = 1):
 
         config={}
         f=open('image_setup_change.dat','r')
@@ -148,9 +148,9 @@ class Mod_Template:
         im = [sum(cl0int)+sum(cl1int)]
         mass=[sum(model[2])/0.03]
         N=[len(model[2])]
-
-        #print('Total emission from cluster is '+str(im))
-        #print('Total mass in cluster is '+str(mass))
+        if output == 1:
+            print('Total emission from cluster is '+str(im))
+            print('Total mass in cluster is '+str(mass))
 
         config={}
         for line in open("cluster_setup_change.dat","r").readlines():
