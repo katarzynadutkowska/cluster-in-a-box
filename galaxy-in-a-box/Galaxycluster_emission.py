@@ -122,7 +122,7 @@ class Mod_Template:
 
         dist0 = 200.   # Reference distance (normalization)
         obs = np.genfromtxt(config['obs'],skip_header=1)
-        model = np.load(config['dist'])
+        model = np.load(config['dist']).T
 
         menv = obs[:,3]
         # lbol = obs[:,5]   # not worried about Lbol for the moment, can come later
