@@ -69,7 +69,7 @@ class ObsFit:
 		fit_m = ofit.lin_test(x, y)
 		if (fit_m[3] < tol) & (fit_m[2] > tol):
 			return [0, fit_m[1]], 'lin'
-		elif (fit_m[3] < tol) & (fit_m[2] < tol):
+		elif (fit_m[3] < tol) & (fit_m[2] < tol) & (fit_m[0] > 0):
 			return [fit_m[0], fit_m[1]], 'lin'
 		# If a linear fit is not good enough, try power-law:
 		else:
@@ -142,8 +142,13 @@ class Mod_Template:
         # Isolate Class 0 and I sources from the model
         cl0 = ((model[6] == 10) | (model[6] == 2))
         cl1 = (model[6] == 11)
-        cl0int=fit[0] + fit[1]*model[2][cl0]
-        cl1int=classI_scale * (fit[0] + fit[1]*model[2][cl1])
+
+        if flag == 'lin':
+            cl0int = fit[0] + fit[1]*model[2][cl0]
+            cl1int = classI_scale * (fit[0] + fit[1]*model[2][cl1])
+        elif flag == 'pow':
+            cl0int = fit[0]*model[2][cl1]**fit[1]
+            cl1int =classI_scale * (fit[0]*model[2][cl1]**fit[1])
 
         im = [sum(cl0int)+sum(cl1int)]
         mass=[sum(model[2])/0.03]
