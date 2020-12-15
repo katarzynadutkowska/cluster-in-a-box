@@ -95,7 +95,7 @@ class Mod_Template:
 	############################################################################
 	# Random mass plus radial distributions
 	############################################################################
-    def main(self,output = 1):
+    def main(self,output = 1, FILE = 'galaxycluster_emission.csv'):
 
         config={}
         f=open('image_setup_change.dat','r')
@@ -165,7 +165,7 @@ class Mod_Template:
         tffscale = config['tff']
         SFE = config['SFE']
 
-        filename='galaxycluster_emission.csv'
+        filename= FILE
 
         if os.path.exists(filename):
             append_write = 'a' # append if already exist

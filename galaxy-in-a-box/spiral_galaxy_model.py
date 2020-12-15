@@ -147,6 +147,7 @@ for n in tff:
 								fout.write(line.replace('1.0',str(n)))
 				f.close()
 				fout.close()
+				outputfile="gal_emission"+"_tff="+str(n)+"_imf="+str(j)+"_SFE="+str(s)+".csv"
 				newname="distributions_Mcm="+str(i)+"_tff="+str(n)+"_imf="+str(j)+"_SFE="+str(s)+".npy"
 				distribution=cd.Mod_distribution()
 				distribution.calc(output=0)
@@ -158,95 +159,95 @@ for n in tff:
 				g.close()
 				gout.close()
 				template=ce.Mod_Template()
-				template.main(output=0)
+				template.main(output=0,FILE=outputfile)
 				try:
 					os.remove(newname)
 				except OSError:
 					pass
 
 
-im = []
-mass = []
-N = []
-#Give same file name as in Galaxy_emission code
-with open('galaxycluster_emission.csv', 'r') as file:
-    reader = csv.reader(file, delimiter='\t')
-    for row in reader:
-        im.append(float(row[0]))
-        mass.append(float(row[1]))
-        N.append(float(row[2]))
+			im = []
+			mass = []
+			N = []
+			#Give same file name as in Galaxy_emission code
+			with open(outputfile, 'r') as file:
+			    reader = csv.reader(file, delimiter='\t')
+			    for row in reader:
+			        im.append(float(row[0]))
+			        mass.append(float(row[1]))
+			        N.append(float(row[2]))
 
-mass = [[i] for i in mass]
-ims = [[i] for i in im]
-N = [[i] for i in N]
+			mass = [[i] for i in mass]
+			ims = [[i] for i in im]
+			N = [[i] for i in N]
 
-comb=np.append(ims,mass,1)
-comb=np.append(comb,N,1)
+			comb=np.append(ims,mass,1)
+			comb=np.append(comb,N,1)
 
-comb1=[]
+			comb1=[]
 
-while (len(comb1)+len(comb))<10000:
-    comb1.extend(comb)
+			while (len(comb1)+len(comb))<10000:
+			    comb1.extend(comb)
 
-for i in comb:
-    comb1.extend([i])
-    if len(comb1)==10000:
-        break
+			for i in comb:
+			    comb1.extend([i])
+			    if len(comb1)==10000:
+			        break
 
-print(np.amax(X))
+			print(np.amax(X))
 
-dims=(1401,1401) #total grid dimensions i.e. galaxy size in pixels each pixel is 17.4pc
-Galaxyarray=np.zeros(dims)
-for i in range(0,len(X)):
-    R=(comb1[i][1]/(np.pi*144))**(1/2)
+			dims=(1401,1401) #total grid dimensions i.e. galaxy size in pixels each pixel is 17.4pc
+			Galaxyarray=np.zeros(dims)
+			for i in range(0,len(X)):
+			    R=(comb1[i][1]/(np.pi*144))**(1/2)
 
-    if 2*R > 17.4:
-        dim=int(2*R/17.4)
-        d = comb1[i][0]/(dim**2)
-        data = np.zeros((dim,dim))
-        data.fill(d)
-    else:
-        d = comb1[i][0]
-        data=np.zeros((3,3))
-        data[1,1]=d
+			    if 2*R > 17.4:
+			        dim=int(2*R/17.4)
+			        d = comb1[i][0]/(dim**2)
+			        data = np.zeros((dim,dim))
+			        data.fill(d)
+			    else:
+			        d = comb1[i][0]
+			        data=np.zeros((3,3))
+			        data[1,1]=d
 
-    x=X[i]*56
-    y=Y[i]*56
+			    x=X[i]*56
+			    y=Y[i]*56
 
-    Galaxyarray[int((x+(dims[0]-len(data))/2)):int((x+(dims[0]+len(data))/2)),int((y+(dims[1]-len(data))/2)):int((y+(dims[1]+len(data))/2))]+=data
-#print(np.amax(x))
-config={}
-f=open('image_setup_change.dat','r')
-for line in f.readlines():
-    config[line.split()[0]]=line.split()[1]
+			    Galaxyarray[int((x+(dims[0]-len(data))/2)):int((x+(dims[0]+len(data))/2)),int((y+(dims[1]-len(data))/2)):int((y+(dims[1]+len(data))/2))]+=data
+			#print(np.amax(x))
+			config={}
+			f=open('image_setup_change.dat','r')
+			for line in f.readlines():
+			    config[line.split()[0]]=line.split()[1]
 
-# Parameters relating to new image
-dist = float(config['bob']) # distance to cluster in pc
-pixel_size = float(config['psize']) # pixel size in arcsec
-resolution = float(config['beam']) # resolution of new image
-dim_pix = int(config['dim']) # image size in pixels
-npix_beam = 2.*np.pi*(resolution/2./(2.*np.log(2.))**0.5)**2 / pixel_size**2   # number of pixels per beam
+			# Parameters relating to new image
+			dist = float(config['bob']) # distance to cluster in pc
+			pixel_size = float(config['psize']) # pixel size in arcsec
+			resolution = float(config['beam']) # resolution of new image
+			dim_pix = int(config['dim']) # image size in pixels
+			npix_beam = 2.*np.pi*(resolution/2./(2.*np.log(2.))**0.5)**2 / pixel_size**2   # number of pixels per beam
 
-beam = Gaussian2DKernel(resolution/pixel_size/(2.*(2.*np.log(2.))**0.5))
-im_obs = convolve(Galaxyarray, beam, boundary='extend')/npix_beam
+			beam = Gaussian2DKernel(resolution/pixel_size/(2.*(2.*np.log(2.))**0.5))
+			im_obs = convolve(Galaxyarray, beam, boundary='extend')/npix_beam
 
-im_obs[im_obs==0]=1e-100
+			im_obs[im_obs==0]=1e-100
 
-#plt.figure()
-fig, ax = plt.subplots()
-my_cmap = copy.copy(matplotlib.cm.get_cmap('jet')) # copy the default cmap
-my_cmap.set_bad([0,0,0])
-plt.imshow(im_obs, interpolation='nearest', cmap=my_cmap, norm=LogNorm(vmin=1e-8, vmax=np.amax(im_obs)))
-plt.colorbar()
-plt.xlabel('kpc from center')
-plt.ylabel('kpc from center')
-plt.xticks(np.arange(0,1401,175))
-plt.yticks(np.arange(0,1401,175))
-labels=[-12,-9,-6,-3,0,3,6,9,12]
-ax.set_xticklabels(labels)
-ax.set_yticklabels(labels)
-plt.savefig('Galaxy_template.pdf',format='pdf')
+			#plt.figure()
+			fig, ax = plt.subplots()
+			my_cmap = copy.copy(matplotlib.cm.get_cmap('jet')) # copy the default cmap
+			my_cmap.set_bad([0,0,0])
+			plt.imshow(im_obs, interpolation='nearest', cmap=my_cmap, norm=LogNorm(vmin=1e-8, vmax=np.amax(im_obs)))
+			plt.colorbar()
+			plt.xlabel('kpc from center')
+			plt.ylabel('kpc from center')
+			plt.xticks(np.arange(0,1401,175))
+			plt.yticks(np.arange(0,1401,175))
+			labels=[-12,-9,-6,-3,0,3,6,9,12]
+			ax.set_xticklabels(labels)
+			ax.set_yticklabels(labels)
+			plt.savefig("Gal_Template"+"_tff="+str(n)+"_imf="+str(j)+"_SFE="+str(s)+".pdf",format='pdf')
 
 
 
-plt.show()
+			plt.show()
