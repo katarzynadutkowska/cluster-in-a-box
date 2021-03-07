@@ -24,7 +24,7 @@ def spatial_mass_dist(
 	mmin=1e4,
 	mmax=1e6):
 	### Mass Distribution ###
-	y=-1.64 #Mass spectra slope from Mark Krumholz 2019 original -1.64
+	y=-1.64 #Mass spectra slope from Roman-Duval 2010
 	MassDist=[]
 	massrange=np.arange(mmin,mmax,1)
 	MassDist=massrange**(y)
