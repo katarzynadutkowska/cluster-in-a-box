@@ -178,7 +178,7 @@ SFE     = [cluster_setup['SFE']]
 IMF     = [cluster_setup['imf']]
 tff     = [cluster_setup['tff']]
 
-Mcm     = [cluster_setup['Mcm']]
+Mcm     = cluster_setup['Mcm']
 Mcm_gal = np.array(mass)
 
 
