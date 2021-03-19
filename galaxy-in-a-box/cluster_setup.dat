@@ -1,4 +1,4 @@
-Mcm   10000         # Molecular cloud mass
+Mcm   10000.0         # Molecular cloud mass
 SFE   0.03		   # Star formation efficiency
 imf   0.0          # Initial mass function, 0 = standard, 1 = top-heavy, 2 = bottom-heavy
 tff   1.0          # Free fall time scaling
