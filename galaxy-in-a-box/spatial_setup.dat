@@ -1,0 +1,10 @@
+alpha   -1.85   # mass spectrum slope; Urquhart et al. 2014
+X       000     # ------ Modify the parameters below to change the spatial distribution
+A1      4.0     # scaling parameter - inner structure
+B1      2.5     # controls arm sweep and bar size - inner structure
+N1      12.0    # controls the amount of winding - inner structure
+A2      1.6     # scaling parameter - outer structure
+B2      6.0     # controls arm sweep and bar size - outer structure
+N2      32.0    # controls the amount of winding - outer structure
+S2      -5.6    # direct scaling factor for the outer equation (moves the spiral arms further from/closer to the inner arms)
+h0      3.52    # scale-length
